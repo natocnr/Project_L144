@@ -1,11 +1,18 @@
 #include <WiFi.h> // Allows board to connect to WiFi.
 #include <PubSubClient.h>     // Allows board to communicate via MQTT.
 
+#include <OneWire.h> // Hnadles communication with sensor.
+#include <DallasTemperature.h> // Converts raw sensore data to temperature.
+
 const char* ssid = "VM6806430"; // WiFi ssid.
 const char* password = "qjSg9aYjk7ujmkun"; // WiFi password.
 
 const char* mqttServer = "192.168.0.220"; //Computers IPv4 address.
 const int mqttPort = 1883; // Default MQTT port.
+
+const int ONE_WIRE_BUS = 4;   // GPIO pin that the sensors data wire is connected to.
+OneWire oneWire(ONE_WIRE_BUS); // Object for OneWire communication.
+DallasTemperature sensors(&oneWire); // Temperature reading obeject.
 
 WiFiClient wifiClient; // Object for Wi-Fi connection.
 PubSubClient mqttClient(wifiClient); // Object for MQTT connection.
@@ -46,6 +53,8 @@ void setup() { // Runs once at start.
   Serial.begin(115200); // Start serial monitor at 115200 bauds.
   connectToWiFi(); // Connect to WiFi.
   mqttClient.setServer(mqttServer, mqttPort); // Stating which MQTT broker to use.
+
+  sensors.begin();   // Start the DS18B20 sensor.
 }
 
 void loop() {
@@ -55,8 +64,16 @@ void loop() {
 
   mqttClient.loop(); // Keep MQTT connection alive.
 
-  mqttClient.publish("aquarium/temperature", "Hello from ESP32!"); // Send test message to the topic "aquarium/temperature".
-  Serial.println("Message sent to MQTT broker!");
+  sensors.requestTemperatures(); // Ask sensor to read temperature.
+  float temperatureC = sensors.getTempCByIndex(0); // Store reading in Celsius.
+
+  char tempString[8];
+  dtostrf(temperatureC, 1, 2, tempString); // Convert float to string so it can be passed in MQTT.
+
+  mqttClient.publish("aquarium/temperature", tempString);  // Publish temperature to topic.
+  Serial.print("Temperature sent: ");
+  Serial.print(tempString);
+  Serial.println(" °C");
 
   delay(5000);
 }
