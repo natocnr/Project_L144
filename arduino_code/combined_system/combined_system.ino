@@ -4,6 +4,8 @@
 #include <DallasTemperature.h> // Converts raw sensor data to temperature.
 #include <Wire.h> // Handles I2C communication.
 #include <BH1750.h> // Allows ESP32 to read light level from BH1750.
+#include <Adafruit_Sensor.h> // Base library used by Adafruit sensors.
+#include <Adafruit_BME280.h> // Allows ESP32 to read temperature/humidity/pressure from BME280.
 
 const char* ssid = "VM6806430"; // Name of Wi-Fi network.
 const char* password = "qjSg9aYjk7ujmkun"; // Password for Wi-Fi network.
@@ -23,6 +25,11 @@ const unsigned long tempInterval = 5000; // Temperature publish interval (ms).
 BH1750 lightMeter; // BH1750 sensor object.
 unsigned long lastLightPublish = 0; // Stores the last time light was published.
 const unsigned long lightInterval = 5000; // Light publish interval (ms).
+
+Adafruit_BME280 bme; // BME280 sensor object.
+bool bme280Ready = false; // True only if BME280 starts correctly.
+unsigned long lastEnvPublish = 0; // Stores the last time environment values were published.
+const unsigned long envInterval = 5000; // Environment publish interval (ms).
 
 
 void connectToWiFi() { // Function to connect ESP32 to Wi-Fi network.
@@ -102,6 +109,52 @@ void publishLight() { // Function to publish light level.
 }
 
 
+void publishEnvironment() { // Function to publish BME280 environment values.
+  if (!bme280Ready) {
+    Serial.println("BME280 not ready.");
+    return; // Do nothing if BME280 did not start.
+  }
+
+  unsigned long currentTime = millis(); // Current time.
+
+  if (currentTime - lastEnvPublish >= envInterval) { // If 5 seconds have passed.
+    lastEnvPublish = currentTime; // Update the last publish time.
+
+    float envTempC = bme.readTemperature(); // Read temperature in Celsius.
+    float envHumidity = bme.readHumidity(); // Read humidity percentage.
+    float envPressureHpa = bme.readPressure() / 100.0F; // Read pressure in hPa.
+
+    // Convert float values into strings for MQTT.
+    char tempString[16];
+    char humidityString[16];
+    char pressureString[16];
+
+    dtostrf(envTempC, 1, 2, tempString);
+    dtostrf(envHumidity, 1, 2, humidityString);
+    dtostrf(envPressureHpa, 1, 2, pressureString);
+
+    // Publish values to MQTT topics.
+    mqttClient.publish("aquarium/environment/temperature", tempString);
+    mqttClient.publish("aquarium/environment/humidity", humidityString);
+    mqttClient.publish("aquarium/environment/pressure", pressureString);
+
+    // Print debug information to the Serial Monitor.
+    Serial.print("Env temperature sent: ");
+    Serial.print(tempString);
+    Serial.println(" °C");
+
+    Serial.print("Env humidity sent: ");
+    Serial.print(humidityString);
+    Serial.println(" %");
+
+    Serial.print("Env pressure sent: ");
+    Serial.print(pressureString);
+    Serial.println(" hPa");
+  }
+}
+
+
+
 void setup() { // Setup function, runs once at start.
   Serial.begin(115200); // Initiate serial monitor at specified baud rate.
   connectToWiFi(); // Connect to Wi-Fi network.
@@ -110,6 +163,7 @@ void setup() { // Setup function, runs once at start.
   tempSensor.begin(); // Start the DS18B20 sensor.
   Wire.begin(); // Start I2C communication.
   lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE); // Start the BH1750 sensor.
+  bme280Ready = bme.begin(0x76); // Start the BME280 sensor (0x76 is the address detected in the I2C scanner).
 
 }
 
@@ -123,4 +177,5 @@ void loop() { // Runs repeatedly after setup funtion.
 
   publishTemperature();
   publishLight();
+  publishEnvironment();
 }
