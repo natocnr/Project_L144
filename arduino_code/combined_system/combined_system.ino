@@ -2,6 +2,8 @@
 #include <PubSubClient.h> // Allows the ESP32 to publish/subscribe using MQTT.
 #include <OneWire.h> // Handles communication with DS18B20 sensor.
 #include <DallasTemperature.h> // Converts raw sensor data to temperature.
+#include <Wire.h> // Handles I2C communication.
+#include <BH1750.h> // Allows ESP32 to read light level from BH1750.
 
 const char* ssid = "VM6806430"; // Name of Wi-Fi network.
 const char* password = "qjSg9aYjk7ujmkun"; // Password for Wi-Fi network.
@@ -17,6 +19,10 @@ OneWire oneWire(ONE_WIRE_BUS); // Object for OneWire communication.
 DallasTemperature tempSensor(&oneWire); // Temperature reading object.
 unsigned long lastTempPublish = 0; // Stores the last time temperature was published.
 const unsigned long tempInterval = 5000; // Temperature publish interval (ms).
+
+BH1750 lightMeter; // BH1750 sensor object.
+unsigned long lastLightPublish = 0; // Stores the last time light was published.
+const unsigned long lightInterval = 5000; // Light publish interval (ms).
 
 
 void connectToWiFi() { // Function to connect ESP32 to Wi-Fi network.
@@ -74,12 +80,37 @@ void publishTemperature() { // Function to publish temperature.
 }
 
 
+void publishLight() { // Function to publish light level.
+  unsigned long currentTime = millis(); // Current time.
+
+  if (currentTime - lastLightPublish >= lightInterval) { // If 5 seconds have passed.
+    lastLightPublish = currentTime; // Update the last publish time.
+
+    float lux = lightMeter.readLightLevel(); // Read light level in lux.
+
+    // Convert float value into a string for MQTT.
+    char luxString[16];
+    dtostrf(lux, 1, 2, luxString);
+
+    mqttClient.publish("aquarium/light", luxString); // Publish light level to MQTT topic.
+
+    // Print debug information to the Serial Monitor.
+    Serial.print("Light sent: ");
+    Serial.print(luxString);
+    Serial.println(" lx");
+  }
+}
+
+
 void setup() { // Setup function, runs once at start.
   Serial.begin(115200); // Initiate serial monitor at specified baud rate.
   connectToWiFi(); // Connect to Wi-Fi network.
   mqttClient.setServer(mqttServer, mqttPort); // Specifying which broker to use.
 
   tempSensor.begin(); // Start the DS18B20 sensor.
+  Wire.begin(); // Start I2C communication.
+  lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE); // Start the BH1750 sensor.
+
 }
 
 
@@ -91,4 +122,5 @@ void loop() { // Runs repeatedly after setup funtion.
   mqttClient.loop(); // Keep MQTT connection alive.
 
   publishTemperature();
+  publishLight();
 }
