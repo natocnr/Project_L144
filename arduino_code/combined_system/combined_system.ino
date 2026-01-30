@@ -31,6 +31,10 @@ bool bme280Ready = false; // True only if BME280 starts correctly.
 unsigned long lastEnvPublish = 0; // Stores the last time environment values were published.
 const unsigned long envInterval = 5000; // Environment publish interval (ms).
 
+const int FLOAT_PIN = 27; // GPIO pin connected to float switch signal wire.
+unsigned long lastLevelPublish = 0; // Stores the last time level was published.
+const unsigned long levelInterval = 2000; // Level publish interval (ms).
+
 
 void connectToWiFi() { // Function to connect ESP32 to Wi-Fi network.
   Serial.println("Connecting to Wi-Fi...");
@@ -154,6 +158,25 @@ void publishEnvironment() { // Function to publish BME280 environment values.
 }
 
 
+void publishLevel() { // Function to publish float switch water level state.
+  unsigned long currentTime = millis(); // Current time.
+
+  if (currentTime - lastLevelPublish >= levelInterval) { // If 2 seconds have passed.
+    lastLevelPublish = currentTime; // Update the last publish time.
+
+    int state = digitalRead(FLOAT_PIN); // Read float switch state.
+
+    if (state == HIGH) {
+      mqttClient.publish("aquarium/level", "OPEN"); // Publish OPEN state.
+      Serial.println("Level sent: OPEN");
+    } else {
+      mqttClient.publish("aquarium/level", "CLOSED"); // Publish CLOSED state.
+      Serial.println("Level sent: CLOSED");
+    }
+  }
+}
+
+
 
 void setup() { // Setup function, runs once at start.
   Serial.begin(115200); // Initiate serial monitor at specified baud rate.
@@ -164,6 +187,8 @@ void setup() { // Setup function, runs once at start.
   Wire.begin(); // Start I2C communication.
   lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE); // Start the BH1750 sensor.
   bme280Ready = bme.begin(0x76); // Start the BME280 sensor (0x76 is the address detected in the I2C scanner).
+  pinMode(FLOAT_PIN, INPUT_PULLUP); // Float switch input using internal pull-up resistor.
+
 
 }
 
@@ -178,4 +203,5 @@ void loop() { // Runs repeatedly after setup funtion.
   publishTemperature();
   publishLight();
   publishEnvironment();
+  publishLevel();
 }
