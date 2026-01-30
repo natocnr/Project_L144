@@ -35,6 +35,12 @@ const int FLOAT_PIN = 27; // GPIO pin connected to float switch signal wire.
 unsigned long lastLevelPublish = 0; // Stores the last time level was published.
 const unsigned long levelInterval = 2000; // Level publish interval (ms).
 
+const int FLOW_PIN = 26; // GPIO pin connected to flow sensor signal.
+volatile unsigned long pulseCount = 0; // Pulse counter (updated by interrupt).
+unsigned long lastFlowPublish = 0; // Stores the last time flow was calculated/published.
+const unsigned long flowInterval = 1000; // Measure pulses for 1 second (1000ms).
+const float FLOW_CALIBRATION = 7.5; // For YF-S201: Flow (L/min) = pulsesPerSecond / 7.5
+
 
 void connectToWiFi() { // Function to connect ESP32 to Wi-Fi network.
   Serial.println("Connecting to Wi-Fi...");
@@ -177,6 +183,43 @@ void publishLevel() { // Function to publish float switch water level state.
 }
 
 
+void IRAM_ATTR pulseCounter() { // Runs automatically every time a pulse happens.
+  pulseCount++; // Count the pulse.
+}
+
+
+void publishFlow() { // Function to publish water flow rate.
+  unsigned long currentTime = millis(); // Current time.
+
+  // Only calculate/publish once per second.
+  if (currentTime - lastFlowPublish >= flowInterval) {
+    lastFlowPublish = currentTime; // Update the timer.
+
+    // Safely copy pulseCount and reset it for the next 1-second window.
+    noInterrupts(); // Pause interrupts for a moment (so pulseCount doesn't change mid-copy).
+    unsigned long pulses = pulseCount; // Copy pulses counted in the last second.
+    pulseCount = 0; // Reset for next measurement window.
+    interrupts(); // Resume interrupts.
+
+    // Convert pulses counted in 1 second into flow rate (L/min).
+    float flowRate = pulses / FLOW_CALIBRATION;
+
+    // Convert float to string for MQTT.
+    char flowString[16];
+    dtostrf(flowRate, 1, 2, flowString);
+
+    // Publish flow.
+    mqttClient.publish("aquarium/sensors/flow", flowString);
+
+    // Debug print.
+    Serial.print("Flow sent: ");
+    Serial.print(flowString);
+    Serial.println(" L/min");
+  }
+}
+
+
+
 
 void setup() { // Setup function, runs once at start.
   Serial.begin(115200); // Initiate serial monitor at specified baud rate.
@@ -189,6 +232,8 @@ void setup() { // Setup function, runs once at start.
   bme280Ready = bme.begin(0x76); // Start the BME280 sensor (0x76 is the address detected in the I2C scanner).
   pinMode(FLOAT_PIN, INPUT_PULLUP); // Float switch input using internal pull-up resistor.
 
+  pinMode(FLOW_PIN, INPUT_PULLUP); // Flow sensor signal input.
+  attachInterrupt(digitalPinToInterrupt(FLOW_PIN), pulseCounter, FALLING); // Count pulses.
 
 }
 
@@ -204,4 +249,5 @@ void loop() { // Runs repeatedly after setup funtion.
   publishLight();
   publishEnvironment();
   publishLevel();
+  publishFlow();
 }
