@@ -1,1 +1,0 @@
-Directory for backend and MQTT-related code. 

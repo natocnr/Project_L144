@@ -1,1 +1,0 @@
-# Notes, diagrams, and progress logs for thesis.

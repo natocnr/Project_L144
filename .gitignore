@@ -1,1 +1,14 @@
-"node_modules/ *.log .env build/" 
+# Node dependencies.
+node_modules/
+
+# Log files.
+*.log
+
+# Environment variables.
+.env
+
+# Build folder.
+build/
+
+# ESP32 secrets file.
+secrets.h

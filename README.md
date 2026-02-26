@@ -1,1 +1,0 @@
-# Project L144, an Aquarium Smart System.

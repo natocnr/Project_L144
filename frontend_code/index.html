@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Metadata -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aquarium Smart System - Dashboard</title>
+
+    <!-- CSS Reference -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Monospace font -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Parent Container -->
+    <div class="page">
+
+        <!-- Page Title -->
+        <div class="header">
+            <h1>Project 144 - An Aquarium Smart System</h1>
+        </div>
+
+        <!-- Sensor List -->
+        <div id="sensorList">
+
+            <!-- Water Temperature -->
+            <div class="sensor-card" data-topic="aquarium/sensors/temperature" data-unit="°C">
+                <div class="sensor-row">
+                    <div class="sensor-title">Water Temperature</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/temperature</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Temperature -->
+            <div class="sensor-card" data-topic="aquarium/sensors/environment/temperature" data-unit="°C">
+                <div class="sensor-row">
+                    <div class="sensor-title">Room Temperature</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/environment/temperature</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Humidity -->
+            <div class="sensor-card" data-topic="aquarium/sensors/environment/humidity" data-unit="%">
+                <div class="sensor-row">
+                    <div class="sensor-title">Room Humidity</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/environment/humidity</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Light Level -->
+            <div class="sensor-card" data-topic="aquarium/sensors/light" data-unit="lux">
+                <div class="sensor-row">
+                    <div class="sensor-title">Light Level</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/light</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Level -->
+            <div class="sensor-card" data-topic="aquarium/sensors/level" data-unit="level">
+                <div class="sensor-row">
+                    <div class="sensor-title">Water Level</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/level</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Flow -->
+            <div class="sensor-card" data-topic="aquarium/sensors/flow" data-unit="L/min">
+                <div class="sensor-row">
+                    <div class="sensor-title">Water Flow</div>
+                    <div class="sensor-value">—</div>
+                    <span class="alert-badge alert-ok">OK</span>
+                </div>
+
+                <div class="sensor-details">
+                    <p><b>Topic:</b> <span class="sensor-topic">aquarium/sensors/flow</span></p>
+                    <p><b>Last updated:</b> <span class="sensor-ts">—</span></p>
+                    
+                    <p><b>Samples:</b> <span class="sensor-count">—</span></p>
+                    <p><b>Min:</b> <span class="sensor-min">—</span></p>
+                    <p><b>Max:</b> <span class="sensor-max">—</span></p>
+                    
+                    <p>
+                        <b>Range:</b>
+                        <select class="sensor-range">
+                            <option value="10m">Last 10 minutes</option>
+                            <option value="1h">Last 1 hour</option>
+                            <option value="6h">Last 6 hours</option>
+                            <option value="24h">Last 24 hours</option>
+                        </select>
+                    </p>
+
+                    <div class="chart-container">
+                        <canvas class="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Alerts -->
+        <div class="alerts-panel">
+            <h2 class="alerts-title">Recent Alerts</h2>
+            <div id="alertsList" class="alerts-list">
+                <div class="alerts-empty">No alerts loaded yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="alerts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

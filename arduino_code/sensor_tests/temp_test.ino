@@ -4,11 +4,13 @@
 #include <OneWire.h> // Hnadles communication with sensor.
 #include <DallasTemperature.h> // Converts raw sensore data to temperature.
 
-const char* ssid = "VM6806430"; // WiFi ssid.
-const char* password = "qjSg9aYjk7ujmkun"; // WiFi password.
+#include "secrets.h" // Configuration file.
 
-const char* mqttServer = "192.168.0.220"; //Computers IPv4 address.
-const int mqttPort = 1883; // Default MQTT port.
+const char* ssid = WIFI_SSID; // WiFi ssid.
+const char* password = WIFI_PASSWORD; // WiFi password.
+
+const char* mqttServer = MQTT_SERVER; //Computers IPv4 address.
+const int mqttPort = MQTT_PORT; // Default MQTT port.
 
 const int ONE_WIRE_BUS = 4;   // GPIO pin that the sensors data wire is connected to.
 OneWire oneWire(ONE_WIRE_BUS); // Object for OneWire communication.

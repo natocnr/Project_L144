@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mongodb": "^7.1.0",
+    "mqtt": "^5.15.0",
+    "nodemailer": "^8.0.1"
+  },
+  "name": "mqtt_collector",
+  "version": "1.0.0",
+  "main": "collector.js",
+  "scripts": {
+    "collector": "node collector.js",
+    "test:mongo": "node test_mongo.js",
+    "test:mqtt": "node test_mqtt.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

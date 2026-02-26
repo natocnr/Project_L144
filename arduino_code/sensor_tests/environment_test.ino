@@ -1,15 +1,17 @@
 #include <WiFi.h> // Allows board to connect to WiFi.
 #include <PubSubClient.h> // Allows board to communicate via MQTT.
 
+#include "secrets.h" // Configuration file.
+
 #include <Wire.h> // Handles I2C communication.
 #include <Adafruit_Sensor.h> // Adafruit sensor base library.
 #include <Adafruit_BME280.h> // Allows board to read BME280 sensor.
 
-const char* ssid = "VM6806430"; // WiFi ssid.
-const char* password = "qjSg9aYjk7ujmkun"; // WiFi password.
+const char* ssid = WIFI_SSID; // WiFi ssid.
+const char* password = WIFI_PASSWORD; // WiFi password.
 
-const char* mqttServer = "192.168.0.220"; // Computers IPv4 address.
-const int mqttPort = 1883; // Default MQTT port.
+const char* mqttServer = MQTT_SERVER; // Computers IPv4 address.
+const int mqttPort = MQTT_PORT; // Default MQTT port.
 
 Adafruit_BME280 bme; // BME280 sensor object.
 

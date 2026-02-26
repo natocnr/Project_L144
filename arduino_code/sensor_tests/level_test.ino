@@ -1,11 +1,13 @@
 #include <WiFi.h> // Allows board to connect to WiFi.
 #include <PubSubClient.h> // Allows board to communicate via MQTT.
 
-const char* ssid = "VM6806430"; // WiFi ssid.
-const char* password = "qjSg9aYjk7ujmkun"; // WiFi password.
+#include "secrets.h" // Configuration file.
 
-const char* mqttServer = "192.168.0.220"; // Computers IPv4 address.
-const int mqttPort = 1883; // Default MQTT port.
+const char* ssid = WIFI_SSID; // WiFi ssid.
+const char* password = WIFI_PASSWORD; // WiFi password.
+
+const char* mqttServer = MQTT_SERVER; // Computers IPv4 address.
+const int mqttPort = MQTT_PORT; // Default MQTT port.
 
 const int FLOAT_PIN = 27; // GPIO pin connected to float switch.
 
