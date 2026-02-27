@@ -26,7 +26,7 @@ function getPort() {
 
 // Function to validate environment variables.
 function validateEnv() {
-    const required = ["MONGO_URI", "MONGO_DB", "MONGO_COLLECTION", "MONGO_AGG_COLLECTION", "MONGO_ALERTS_COLLECTION"];
+    const required = ["MONGO_URI", "MONGO_DB", "MONGO_COLLECTION", "MONGO_AGG_COLLECTION", "MONGO_ALERTS_COLLECTION", "API_KEY"];
     for (const key of required) {
         if (!process.env[key]) {
             console.error(`Missing required environment variable: ${key}`);
@@ -109,6 +109,16 @@ function createApp() {
 
     // Enable CORS so frontend can call API.
     app.use(cors());
+
+    // API key protection.
+    app.use(function (req, res, next) {
+        if (req.path === "/health") {
+            next();
+            return;
+        }
+
+        apiKey(req, res, next);
+    });
 
     // Return CORS enables express app.
     return app;
@@ -409,6 +419,28 @@ function cleanShutdown(mongoClient) {
             process.exit(0);
         }
     });
+}
+
+function apiKey(req, res, next) {
+    const expectedKey = process.env.API_KEY;
+    const clientKey = req.header("api-key");
+
+    if (!expectedKey) {
+        res.status(500).json({ error: "Server missing API_KEY configuration" });
+        return;
+    }
+
+    if (!clientKey) {
+        res.status(401).json({ error: "Missing API key" });
+        return;
+    }
+
+    if (clientKey !== expectedKey) {
+        res.status(403).json({ error: "Invalid API key" });
+        return;
+    }
+
+    next();
 }
 
 // Program entry point.

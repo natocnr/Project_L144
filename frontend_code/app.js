@@ -1,6 +1,9 @@
 // API server host and port number.
 const API_BASE = window.APP_CONFIG.API_BASE;
 
+// API key.
+const API_KEY = window.APP_CONFIG.API_KEY;
+
 // How many history documents we fetch for stats, change for testing.
 const HISTORY_LIMIT = 1000;
 
@@ -192,7 +195,11 @@ async function getHistoryAgg(topic, startIso, endIso) {
 // Fetch helper function.
 async function fetchJson(url) {
     // Return response object.
-    const response = await fetch(url);
+    const response = await fetch(url, {
+        headers: {
+        "api-key": API_KEY
+        }
+    });
 
     // If status is not ok.
     if (!response.ok) {
