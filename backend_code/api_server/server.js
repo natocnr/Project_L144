@@ -1,5 +1,7 @@
-// Load environment variables from .env into process.env.
-require("dotenv").config();
+// Load .env locally only (Render sets env vars in the dashboard).
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
 
 // Import Express for building the HTTP API.
 const express = require("express");
@@ -388,7 +390,7 @@ function registerRoutes(app, collection, aggCollection, alertsCollection) {
 // Starts Express server on specific port.
 function startServer(app, port) {
     app.listen(port, function () {
-        console.log(`API server listening on http://localhost:${port}`);
+        console.log(`API server listening on port ${port}`);
     });
 }
 
